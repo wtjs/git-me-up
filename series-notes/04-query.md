@@ -29,3 +29,125 @@ These are the queries that were used in the video. Try playing around with them 
   }
 }
 ```
+
+## 3. Passing arguements
+
+```graphql
+{
+  viewer {
+    name
+    # passing arguements to field
+    organization(login: "wtjs") {
+      name
+    }
+  }
+}
+```
+
+## 4. Aliases
+
+```graphql
+{
+  # aliasing query results
+  lovesMountains: user(login: "divyanshu013") {
+    name
+  }
+  lovesBeaches: user(login: "metagrover") {
+    name
+  }
+}
+```
+
+## 5. Fragments
+
+```graphql
+{
+  lovesMountains: user(login: "divyanshu013") {
+    ...userFields
+  }
+  lovesBeaches: user(login: "metagrover") {
+    ...userFields
+  }
+}
+
+# creating a reusable fragment
+fragment userFields on User {
+  name
+  bio
+}
+```
+
+## 6. Operation type and name
+
+```graphql
+# Add an operation type and name
+query GetViewer {
+  viewer {
+    name
+  }
+}
+```
+
+## 7. Variables
+
+```graphql
+# Adding a $login variable. Notice the !
+query GetUser($login: String!) {
+  user(login: $login) {
+    name
+  }
+}
+```
+
+```json
+{
+  "login": "divyanshu013"
+}
+```
+
+## 8. Default variables
+
+```graphql
+# Adding a $login default variable
+query GetUser($login: String = "divyanshu013") {
+  user(login: $login) {
+    name
+  }
+}
+```
+
+```json
+{
+
+}
+```
+
+## 9. Directives
+
+```graphql
+# Using directives @include @skip
+query GetUser($withBio: Boolean!) {
+  user(login: "divyanshu013") {
+    name
+    bio @include(if: $withBio)
+  }
+}
+```
+
+```json
+{
+  "withBio": true
+}
+```
+
+## 10. Meta fields
+
+```graphql
+# Meta fields
+query GetViewer {
+  viewer {
+    __typename
+    name
+  }
+}
+```
