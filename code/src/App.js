@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
 import { createGlobalStyle } from 'styled-components';
+import { ApolloClient } from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import 'styled-components/macro';
 
 import Login from './Login';
+import Sidebar from './components/Sidebar';
 
+// get the authentication token from local storage if it exists
 const accessToken = localStorage.getItem('token');
 
-fetch('https://api.github.com/graphql', {
-	method: 'POST',
+const httpLink = new HttpLink({
+	uri: 'https://api.github.com/graphql',
 	headers: {
-		Authorization: `bearer ${accessToken}`,
+		Authorization: `Bearer ${accessToken}`,
 	},
-	body: JSON.stringify({
-		query: `
-    {
-      viewer {
-        name
-      }
-    }
-    `,
-	}),
-})
-	.then(res => res.json())
-	.then(json => console.log(json));
+});
+
+const client = new ApolloClient({
+	link: httpLink,
+	cache: new InMemoryCache(),
+});
 
 const Global = createGlobalStyle({
 	body: {
@@ -45,14 +45,9 @@ class App extends Component {
 			<>
 				<Global />
 				{accessToken ? (
-					<button
-						onClick={() => {
-							localStorage.clear();
-							window.location.reload();
-						}}
-					>
-						Logout
-					</button>
+					<ApolloProvider client={client}>
+						<Sidebar />
+					</ApolloProvider>
 				) : (
 					<Login />
 				)}
