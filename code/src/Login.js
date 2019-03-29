@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import 'styled-components/macro';
 
-import Button from './Button';
+import Button from './components/Button';
 
 const Login = () => {
 	const [token, setToken] = useState('');

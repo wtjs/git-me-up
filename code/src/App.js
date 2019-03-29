@@ -47,6 +47,8 @@ class App extends Component {
 				{accessToken ? (
 					<ApolloProvider client={client}>
 						<Sidebar />
+						<Sidebar />
+						<Sidebar />
 					</ApolloProvider>
 				) : (
 					<Login />
