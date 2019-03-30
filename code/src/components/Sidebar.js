@@ -16,7 +16,18 @@ const GET_VIEWER = gql`
 `;
 
 const Sidebar = () => (
-	<aside>
+	<aside
+		css={{
+			alignSelf: 'stretch',
+			background: '#eaeaea',
+			borderRight: '1px solid #e9e9e9',
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			padding: 16,
+			justifyContent: 'space-between',
+		}}
+	>
 		<div>
 			<Query query={GET_VIEWER}>
 				{({ loading, error, data }) => (

@@ -7,6 +7,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import 'styled-components/macro';
 
+import Column from './components/Column';
 import Login from './Login';
 import Sidebar from './components/Sidebar';
 
@@ -46,9 +47,19 @@ class App extends Component {
 				<Global />
 				{accessToken ? (
 					<ApolloProvider client={client}>
-						<Sidebar />
-						<Sidebar />
-						<Sidebar />
+						<div
+							css={{
+								display: 'grid',
+								gridTemplateColumns: '80px repeat(auto-fit, 300px)',
+								alignItems: 'start',
+								height: 'calc(100vh - 4px)',
+								overflow: 'hidden',
+							}}
+						>
+							<Sidebar />
+							<Column user="divyanshu013" />
+							<Column user="metagrover" />
+						</div>
 					</ApolloProvider>
 				) : (
 					<Login />
