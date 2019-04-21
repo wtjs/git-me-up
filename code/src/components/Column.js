@@ -6,13 +6,18 @@ import 'styled-components/macro';
 
 import RepoCard from './RepoCard';
 import Avatar from './Avatar';
+import Button from './Button';
 
 const GET_USER_ACTIVITY = gql`
-	query($user: String!) {
+	query($user: String!, $cursor: String) {
 		user(login: $user) {
 			id
 			avatarUrl
-			starredRepositories(last: 6) {
+			starredRepositories(last: 6, before: $cursor) {
+				pageInfo {
+					hasPreviousPage
+					startCursor
+				}
 				edges {
 					node {
 						id
@@ -53,8 +58,8 @@ const ColumnWrapper = styled('section')({
 
 const Column = ({ user }) => (
 	<ColumnWrapper>
-		<Query query={GET_USER_ACTIVITY} variables={{ user }}>
-			{({ data, error, loading }) => (
+		<Query query={GET_USER_ACTIVITY} variables={{ user, cursor: null }}>
+			{({ data, error, loading, fetchMore }) => (
 				<>
 					{loading && <div>loading...</div>}
 					{error && <div>{JSON.stringify(error)}</div>}
@@ -73,6 +78,42 @@ const Column = ({ user }) => (
 							{data.user.starredRepositories.edges.map(({ node }) => (
 								<RepoCard data={node} key={node.id} />
 							))}
+							{data.user.starredRepositories.pageInfo.hasPreviousPage && (
+								<Button
+									onClick={() => {
+										fetchMore({
+											variables: {
+												cursor:
+													data.user.starredRepositories.pageInfo
+														.startCursor,
+											},
+											updateQuery: (prev, { fetchMoreResult }) => {
+												if (!fetchMoreResult) {
+													return prev;
+												}
+												return {
+													user: {
+														...prev.user,
+														starredRepositories: {
+															...fetchMoreResult.user
+																.starredRepositories,
+															edges: [
+																...prev.user.starredRepositories
+																	.edges,
+																...fetchMoreResult.user
+																	.starredRepositories.edges,
+															],
+														},
+													},
+												};
+											},
+										});
+									}}
+									css={{ width: '100%' }}
+								>
+									Load More
+								</Button>
+							)}
 						</>
 					)}
 				</>
